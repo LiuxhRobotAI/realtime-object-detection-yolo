@@ -1,26 +1,31 @@
 # realtime-object-detection-yolo
-**使用realsense d435i,d455相机，基于pytorch实现yolo(v5)目标检测，实时返回检测目标相机坐标系下的位置信息。**
+**Using realsense d455，based on yolo(v5), for realtime-object-detection and positioning in cmeara frame**
 
-# 1.Environment：
-0.（可选）使用miniconda创建虚拟环境
+# 1. Environment：
+0.(Optional) miniconda for python env
 ```bash
 conda create -n yolo5py38 python=3.8
 conda activate yolo5py38
 ```
 
-1.一个可以运行YOLOv5的python环境,也可以直接使用yolov5的requirements.txt
+1. Requirements for YOLOv5 Python environment. The requirements.txt in yolov5 also works.
 
 ```bash
 pip install -r requirements.txt
 ```
 
-2.一个realsense相机和pyrealsense2库
+2. The RealSense camera and pyrealsense2 libraries
 
 ```bash
 pip install pyrealsense2
 ```
 
-**在下面几个环境中测试成功**
+3. Run for detection
+```
+python main_yolo_ros.py
+```
+
+**Tested platform**
 
 - **win10** python 3.8 Pytorch 1.10.2+gpu CUDA 11.3  NVIDIA GeForce MX150
 
@@ -40,15 +45,15 @@ pip install pyrealsense2
 
 # 3.Model config：
 
-修改模型配置文件，这里以yolov5s模型为例。也可以使用自己训练的权重模型。
+Modify the configuration of model，according to yolov5s or your own trained model weight and camera.
 
 ```yaml
 weight:  "weights/yolov5s.pt"
-# 输入图像的尺寸
+# Image size
 input_size: 640
-# 类别个数
+# object categrory
 class_num:  80
-# 标签名称
+# label name
 class_name: [ 'person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat', 'traffic light',
          'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep', 'cow',
          'elephant', 'bear', 'zebra', 'giraffe', 'backpack', 'umbrella', 'handbag', 'tie', 'suitcase', 'frisbee',
@@ -58,46 +63,46 @@ class_name: [ 'person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'trai
          'potted plant', 'bed', 'dining table', 'toilet', 'tv', 'laptop', 'mouse', 'remote', 'keyboard', 'cell phone',
          'microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase', 'scissors', 'teddy bear',
          'hair drier', 'toothbrush' ]
-# 阈值设置
+
 threshold:
   iou: 0.45
   confidence: 0.6
-# 计算设备
+# Selected device
 # - cpu
-# - 0 <- 使用GPU
+# - 0 <- GPU
 device: 'cpu'
 ```
 
-# 4.Camera config：
-
-分辨率好像只能改特定的参数，不然会报错。d435i可以用 1280x720, 640x480, 848x480。
-
+# 4. Camera config：
+It seems that the resolution can only be changed by modifying specific parameters, otherwise an error will occur. For d435i: 1280x720, 640x480, 848x480.
 ```python
 config.enable_stream(rs.stream.depth, 1280, 720, rs.format.z16, 30)
 config.enable_stream(rs.stream.color, 1280, 720, rs.format.bgr8, 30)
 ```
-# 5.code return xyz：
-下方代码实现从像素坐标系到相机坐标系转换，并且标注中心点以及三维坐标信息。
+# 5. Code return xyz：
+The code below implements the transformation from pixel coordinates to camera coordinates and marks the center point and 3D coordinate information.
+
 ```python
 for i in range(len(xyxy_list)):
-    ux = int((xyxy_list[i][0]+xyxy_list[i][2])/2)  # 计算像素坐标系的x
-    uy = int((xyxy_list[i][1]+xyxy_list[i][3])/2)  # 计算像素坐标系的y
-    dis = aligned_depth_frame.get_distance(ux, uy)  
+    ux = int((xyxy_list[i][0]+xyxy_list[i][2])/2)  # Pixel x
+    uy = int((xyxy_list[i][1]+xyxy_list[i][3])/2)  # Pixel y
+    dis = aligned_depth_frame.get_distance(ux, uy)
     camera_xyz = rs.rs2_deproject_pixel_to_point(
-    depth_intrin, (ux, uy), dis)  # 计算相机坐标系xyz
-    camera_xyz = np.round(np.array(camera_xyz), 3)  # 转成3位小数
+    depth_intrin, (ux, uy), dis)  # camera xyz
+    camera_xyz = np.round(np.array(camera_xyz), 3)
     camera_xyz = camera_xyz.tolist()
-    cv2.circle(canvas, (ux,uy), 4, (255, 255, 255), 5)#标出中心点
+    cv2.circle(canvas, (ux,uy), 4, (255, 255, 255), 5) # mark object center
     cv2.putText(canvas, str(camera_xyz), (ux+20, uy+10), 0, 1,
-                                [225, 255, 255], thickness=2, lineType=cv2.LINE_AA)#标出坐标
+                                [225, 255, 255], thickness=2, lineType=cv2.LINE_AA) # mark position in camera frame
     camera_xyz_list.append(camera_xyz)
     #print(camera_xyz_list)
 ```
 
 # 6.TODO
-- [ ] 使用最新的yolov10替换目前的模型文件；
-- [ ] 接入ROS并计算与机器人的坐标转换;
-- [ ] 当前对小物品的检测距离有限，如鼠标的检测距离仅有约0.5m
+- [ ] Replace with the latest YOLO models, like yolo10 or yolo26；
+- [ ] Use for ROS and calculate the position in the robot frame;
+- [ ] Small object detection can be improved, detection for the mouse only in 0.5m
+
 
 # 7.Reference:
 
