@@ -34,14 +34,15 @@ python main_yolo_ros.py
 - **ubuntu20.04**  python 3.8 Pytorch 1.8.1+cpu
 
 # 2.Results：
-
+<!--
 - Colorimage:
 
-![image-20220213144406079](https://github.com/L53317/realtime-object-detection-yolov5-d435i/blob/main/images/image-20220213144406079.png)
+ ![image-20220213144406079](https://github.com/L53317/realtime-object-detection-yolov5-d435i/blob/main/images/image-20220213144406079.png)
+ -->
 
 - Colorimage and depthimage:
 
-![image-20220213143921695](https://github.com/L53317/realtime-object-detection-yolov5-d435i/blob/main/images/image-20220213143921695.png)
+![image-20220213143921695](https://github.com/LiuxhRobotAI/realtime-object-detection-yolo/tree/main/images/image-20220213143921695.png)
 
 # 3.Model config：
 
