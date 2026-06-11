@@ -37,14 +37,16 @@ python main_yolo_ros.py
 <!--
 - Colorimage:
 
- ![image-20220213144406079](https://github.com/L53317/realtime-object-detection-yolov5-d435i/blob/main/images/image-20220213144406079.png)
+ ![image-detection](https://github.com/L53317/realtime-object-detection-yolov5-d435i/blob/main/images/Detection.png)
+
+- Detection example:
+
+[![here](https://img.youtube.com/vi/R8SZTFAUvmo/0.jpg)](https://youtu.be/R8SZTFAUvmo)
  -->
+ 
+A demonstration video can be found [here](https://youtu.be/R8SZTFAUvmo)
 
-- Colorimage and depthimage example:
-
-<img src="./images/image-20220213143921695.png" height="300">
-
-A demonstration video can be found [here](https://youtu.be/R8SZTFAUvmo).
+[<img src="./images/Detection.png" height="300">](https://youtu.be/R8SZTFAUvmo)
 
 # 3.Model config：
 
